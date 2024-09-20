@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package node;
+
+// Definición del servicio de Node
+service NodeService {
+    // Método para enviar mensajes entre nodos
+    rpc SendMessage(CancionRequest) returns (MessageResponse);
+
+    // Método para encontrar el sucesor de un nodo en la red
+    rpc FindSuccessor (NodeIDRequest) returns (SuccessorResponse);
+
+    // Métodos para actualizar el predecesor y el sucesor de un nodo
+    rpc UpdatePredecessor (UpdateRequest) returns (EmptyResponse);
+    rpc UpdateSuccessor (UpdateRequest) returns (EmptyResponse);
+}
+
+
+message CancionRequest {
+    string cancion = 1;          // Nombre de la canción
+    int32 tamano_cancion = 2;    // Tamaño de la canción en MBps
+}
+
+message MessageResponse {
+    string reply = 1;            // Mensaje de respuesta
+}
+
+// Mensaje de solicitud para obtener el ID de un nodo
+message NodeIDRequest {
+    int32 id = 1;  // Define el campo id como string (puedes mantenerlo como int32 si prefieres)
+}
+
+
+// Respuesta que contiene la información del sucesor y predecesor
+message SuccessorResponse {
+    string successor_address = 1;  // Dirección del nodo sucesor
+    string predecessor_address = 2; // Dirección del nodo predecesor
+}
+
+// Solicitud para actualizar el sucesor o predecesor de un nodo
+message UpdateRequest {
+    string new_predecessor_address = 1;  // Nueva dirección del predecesor
+    string new_successor_address = 2;    // Nueva dirección del sucesor
+}
+
+// Respuesta vacía (utilizada para métodos de actualización)
+message EmptyResponse {}
