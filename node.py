@@ -107,7 +107,19 @@ class Node(node_pb2_grpc.NodeServiceServicer):
 
     
     def search_cancion(self, cancion_buscar):
-        pass
+        if self.id == self.successor.id:
+            print('entro al if')
+            print(f"Guardando canción '{cancion}' en el nodo con ID {self.id}")
+            self.dic_mis_canciones[cancion] = tamano_cancion
+        elif (self.id > cancion_hash > self.predecessor.id) or (self.id > self.successor.id and cancion_hash >= self.id):
+            print(f"Guardando canción '{cancion}' en el nodo con ID {self.id}")
+            self.dic_mis_canciones[cancion] = tamano_cancion
+        else:
+            # Si no es el nodo responsable, reenviar la canción al sucesor
+            with grpc.insecure_channel(self.successor.address) as channel:
+                stub = node_pb2_grpc.NodeServiceStub(channel)
+                print(f"Reenviando canción '{cancion}' al sucesor con ID {self.successor.id}")
+                stub.SendMessage(node_pb2.CancionRequest(cancion=cancion, tamano_cancion=tamano_cancion))
             
             
             
