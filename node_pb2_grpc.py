@@ -55,6 +55,11 @@ class NodeServiceStub(object):
                 request_serializer=node__pb2.UpdateRequest.SerializeToString,
                 response_deserializer=node__pb2.EmptyResponse.FromString,
                 _registered_method=True)
+        self.BuscarResponsabilidades = channel.unary_unary(
+                '/node.NodeService/BuscarResponsabilidades',
+                request_serializer=node__pb2.ResponsabilidadesRequest.SerializeToString,
+                response_deserializer=node__pb2.ResponsabilidadesResponse.FromString,
+                _registered_method=True)
 
 
 class NodeServiceServicer(object):
@@ -88,6 +93,12 @@ class NodeServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def BuscarResponsabilidades(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_NodeServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -110,6 +121,11 @@ def add_NodeServiceServicer_to_server(servicer, server):
                     servicer.UpdateSuccessor,
                     request_deserializer=node__pb2.UpdateRequest.FromString,
                     response_serializer=node__pb2.EmptyResponse.SerializeToString,
+            ),
+            'BuscarResponsabilidades': grpc.unary_unary_rpc_method_handler(
+                    servicer.BuscarResponsabilidades,
+                    request_deserializer=node__pb2.ResponsabilidadesRequest.FromString,
+                    response_serializer=node__pb2.ResponsabilidadesResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -221,6 +237,33 @@ class NodeService(object):
             '/node.NodeService/UpdateSuccessor',
             node__pb2.UpdateRequest.SerializeToString,
             node__pb2.EmptyResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def BuscarResponsabilidades(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/node.NodeService/BuscarResponsabilidades',
+            node__pb2.ResponsabilidadesRequest.SerializeToString,
+            node__pb2.ResponsabilidadesResponse.FromString,
             options,
             channel_credentials,
             insecure,

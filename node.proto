@@ -13,6 +13,7 @@ service NodeService {
     // Métodos para actualizar el predecesor y el sucesor de un nodo
     rpc UpdatePredecessor (UpdateRequest) returns (EmptyResponse);
     rpc UpdateSuccessor (UpdateRequest) returns (EmptyResponse);
+    rpc BuscarResponsabilidades (ResponsabilidadesRequest) returns (ResponsabilidadesResponse);
 }
 
 
@@ -45,3 +46,11 @@ message UpdateRequest {
 
 // Respuesta vacía (utilizada para métodos de actualización)
 message EmptyResponse {}
+
+message ResponsabilidadesRequest {
+    int32 id = 1;  // ID del nodo solicitante
+}
+
+message ResponsabilidadesResponse {
+    map<int32, string> items = 1;  // Diccionario de items mayores al ID del solicitante
+}
