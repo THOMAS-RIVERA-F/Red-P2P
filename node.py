@@ -107,33 +107,20 @@ class Node(node_pb2_grpc.NodeServiceServicer):
 
     
     def search_cancion(self, cancion_buscar):
-        if self.id == self.successor.id:
-            print('entro al if')
-            print(f"Guardando canción '{cancion}' en el nodo con ID {self.id}")
-            self.dic_mis_canciones[cancion] = tamano_cancion
-        elif (self.id > cancion_hash > self.predecessor.id) or (self.id > self.successor.id and cancion_hash >= self.id):
-            print(f"Guardando canción '{cancion}' en el nodo con ID {self.id}")
-            self.dic_mis_canciones[cancion] = tamano_cancion
-        else:
-            # Si no es el nodo responsable, reenviar la canción al sucesor
-            with grpc.insecure_channel(self.successor.address) as channel:
-                stub = node_pb2_grpc.NodeServiceStub(channel)
-                print(f"Reenviando canción '{cancion}' al sucesor con ID {self.successor.id}")
-                stub.SendMessage(node_pb2.CancionRequest(cancion=cancion, tamano_cancion=tamano_cancion))
-            
+        pass
             
             
     def client_loop(self):
         """Bucle del cliente para enviar mensajes o solicitar el ID de otro nodo (Cliente)"""
         while True:
             option = input("Escoge una opcion (1: Subir una cancion a la red, 2: Buscar una cancion en la red): ")
+            print()
             
             if option == "1":
                 cancion = input("Ingresa la cancion a subir: ")
-                t_cancion = input("Ingrese el tamaño del archivo (ej: 12 Mbps)")
+                t_cancion = input("Ingrese el tamaño del archivo (ej: 12 MB): ")
                 tamano_cancion = int(t_cancion.split(' ')[0])
                 self.send_cancion(cancion, tamano_cancion)
-                print('llego a client looppppppppppppppppppppp')
             elif option == "2":
                 cancion_buscar = input("Ingresa la cancion a buscar: ")
                 self.search_cancion(cancion_buscar)
@@ -152,7 +139,7 @@ class Node(node_pb2_grpc.NodeServiceServicer):
 
     def join_existing_network(self, bootstrap_node_address):
         """Método para unirse a una red existente usando un nodo bootstrap."""
-        print(f"Intentando conectar al nodo bootstrap en {bootstrap_node_address}")
+        
         with grpc.insecure_channel(bootstrap_node_address) as channel:
             stub = node_pb2_grpc.NodeServiceStub(channel)
             print("Intentando encontrar el sucesor...")
@@ -170,7 +157,6 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             self.successor = successor
             self.predecessor = predecessor
             
-            print()
             print(f"Me uní a la red.")
             print()
             
@@ -186,7 +172,7 @@ class Node(node_pb2_grpc.NodeServiceServicer):
                                 
                 stub_succ.UpdatePredecessor(node_pb2.UpdateRequest(new_predecessor_address=self.address, new_successor_address=""))
 
-            print(f"mi sucesor es: {self.successor.address}, mi predecesor es: {self.predecessor.address}")
+            print(f"Mi ID: {self.id}, Sucesor: {self.successor.id}, Predecesor: {self.predecessor.id}")
             
 
     # ========== UTILIDADES ==========
@@ -210,14 +196,12 @@ class Node(node_pb2_grpc.NodeServiceServicer):
         is_first_node = input("¿Es este el primer nodo en la red? (s/n): ").lower()
 
         if is_first_node == 's':
-            print("Este es el primer nodo de la red. Uniendo a la red...")
             # Si es el primer nodo, no hay bootstrap node
             self.join_network()
         else:
             # Si no es el primer nodo, solicitar la dirección del nodo bootstrap
-            bootstrap_port = input("Ingrese el puerto del nodo bootstrap (ej. 50051): ")
+            bootstrap_port = input("Ingrese el puerto de algun nodo de la red a unirse (ej. 50051): ")
             bootstrap_address = f'localhost:{bootstrap_port}'
-            print(f"Uniendo a la red con nodo bootstrap en {bootstrap_address}")
             self.join_network(bootstrap_node=bootstrap_address)
 
         print("El nodo se ha unido a la red. Listo para subir o buscar canciones...")
