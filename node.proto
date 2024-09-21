@@ -10,10 +10,13 @@ service NodeService {
     // Método para encontrar el sucesor de un nodo en la red
     rpc FindSuccessor (NodeIDRequest) returns (SuccessorResponse);
 
-    // Métodos para actualizar el predecesor y el sucesor de un nodo
+    // Métodos para actualizar el predecesor y el sucesor de un nodo (Join)
     rpc UpdatePredecessor (UpdateRequest) returns (EmptyResponse);
     rpc UpdateSuccessor (UpdateRequest) returns (EmptyResponse);
     rpc BuscarResponsabilidades (ResponsabilidadesRequest) returns (ResponsabilidadesResponse);
+
+    // RPC para buscar una canción en la red
+    rpc BuscarCancion (BuscarCancionRequest) returns (BuscarCancionResponse);
 }
 
 
@@ -51,6 +54,19 @@ message ResponsabilidadesRequest {
     int32 id = 1;  // ID del nodo solicitante
 }
 
+
 message ResponsabilidadesResponse {
-    map<int32, string> items = 1;  // Diccionario de items mayores al ID del solicitante
+    map<int32, string> items = 1;  // Diccionario con hash de canción como clave y un nombre de cancion
+}
+
+// Mensaje para buscar una canción en la red
+message BuscarCancionRequest {
+    string cancion = 1;       // El nombre de la canción a buscar
+    int32 requester_id = 2;   // ID del nodo que inició la búsqueda
+}
+
+// Respuesta al buscar una canción
+message BuscarCancionResponse {
+    string cancion = 1;        // El nombre de la canción encontrada (vacío si no se encuentra)
+    int32 id_nodo = 3;         // ID del nodo que tiene la canción, -1 si no se encuentra
 }

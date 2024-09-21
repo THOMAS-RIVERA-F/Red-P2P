@@ -135,21 +135,56 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             return dict(response.items)
 
     
-    def search_cancion(self, cancion_buscar):
-        '''
-        hash_cancion = self.do_hash(cancion_buscar)
-        print(f"Buscando la canción '{cancion_buscar}' con hash: {hash_cancion}")
+    def buscar_cancion(self, cancion_buscada):
+        requester_id = self.id
+        hash_cancion = self.do_hash(cancion_buscada)
+        
+        print(f"Buscando la canción '{cancion_buscada}' con hash: {hash_cancion}")
         
         if hash_cancion in self.dic_mis_canciones.keys():
-            print(f"La canción '{cancion_buscar}' se encuentra en el nodo con ID: {self.id}")
+            print(f"La canción '{cancion_buscada}' se encuentra en el nodo con ID: {self.id}")
+            
         else:
+            print(f"Reenviando la solicitud de búsqueda al sucesor con ID {self.successor.id}")
             # Si no es responsable, reenviar la solicitud al sucesor
             with grpc.insecure_channel(self.successor.address) as channel:
+                
                 stub = node_pb2_grpc.NodeServiceStub(channel)
-                print(f"Reenviando la solicitud de búsqueda de la canción '{cancion_buscar}' al sucesor con ID {self.successor.id}")
-                response = stub.search_cancion(node_pb2.CancionRequest(cancion=cancion_buscar, tamano_cancion=0))
-                print(response.reply)
-        '''
+                
+                request = node_pb2.BuscarCancionRequest(cancion = cancion_buscada, requester_id = requester_id)
+                
+                print(f"Reenviando la solicitud de búsqueda de la canción '{cancion_buscada}' al sucesor con ID {self.successor.id}")
+                response = stub.BuscarCancion(request)
+                
+                if response.id_nodo == -1:
+                    print(f"La canción '{cancion_buscada}' no se encontró en toda la red.")
+                else:
+                    print(f"La canción '{cancion_buscada}' se encuentra en el nodo con ID: {response.id_nodo}")
+                    
+                
+                    
+    def BuscarCancion(self, request, context):
+        id_solicitante = request.requester_id
+        hash_cancion = self.do_hash(request.cancion)
+        
+        if hash_cancion in self.dic_mis_canciones.keys():
+            # Si la canción está en este nodo
+            print(f'Yo nodo {self.id} tengo la cancion {request.cancion}')
+            print(f"Se la enviare a {id_solicitante}")
+            return node_pb2.BuscarCancionResponse(cancion=request.cancion, id_nodo=self.id)
+        else:
+            # Si no es la canción de este nodo y aún no se ha cerrado el ciclo
+            if id_solicitante != self.id:
+                print(f"La canción '{request.cancion}' no es responsabilidad de: {self.id}, reenviando al sucesor.")
+                with grpc.insecure_channel(self.successor.address) as channel:
+                    stub = node_pb2_grpc.NodeServiceStub(channel)
+                    return stub.search_cancion(request)
+            else:
+                # Si ha dado toda la vuelta y no se encontró
+                print(f"La canción '{request.cancion}' no se encontró en toda la red.")
+                return node_pb2.CancionResponse(cancion='', id_nodo=-1)
+
+               
             
             
     def client_loop(self):
@@ -166,7 +201,9 @@ class Node(node_pb2_grpc.NodeServiceServicer):
                 self.send_cancion(cancion, tamano_cancion)
             elif option == "2":
                 cancion_buscar = input("Ingresa la cancion a buscar: ")
-                self.search_cancion(cancion_buscar)
+                self.buscar_cancion(cancion_buscar)
+                
+                
     
     def join_network(self, bootstrap_node=None):
         """Método para unirse a la red."""

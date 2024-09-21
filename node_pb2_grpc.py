@@ -60,6 +60,11 @@ class NodeServiceStub(object):
                 request_serializer=node__pb2.ResponsabilidadesRequest.SerializeToString,
                 response_deserializer=node__pb2.ResponsabilidadesResponse.FromString,
                 _registered_method=True)
+        self.BuscarCancion = channel.unary_unary(
+                '/node.NodeService/BuscarCancion',
+                request_serializer=node__pb2.BuscarCancionRequest.SerializeToString,
+                response_deserializer=node__pb2.BuscarCancionResponse.FromString,
+                _registered_method=True)
 
 
 class NodeServiceServicer(object):
@@ -81,7 +86,7 @@ class NodeServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def UpdatePredecessor(self, request, context):
-        """Métodos para actualizar el predecesor y el sucesor de un nodo
+        """Métodos para actualizar el predecesor y el sucesor de un nodo (Join)
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -95,6 +100,13 @@ class NodeServiceServicer(object):
 
     def BuscarResponsabilidades(self, request, context):
         """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def BuscarCancion(self, request, context):
+        """RPC para buscar una canción en la red
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -126,6 +138,11 @@ def add_NodeServiceServicer_to_server(servicer, server):
                     servicer.BuscarResponsabilidades,
                     request_deserializer=node__pb2.ResponsabilidadesRequest.FromString,
                     response_serializer=node__pb2.ResponsabilidadesResponse.SerializeToString,
+            ),
+            'BuscarCancion': grpc.unary_unary_rpc_method_handler(
+                    servicer.BuscarCancion,
+                    request_deserializer=node__pb2.BuscarCancionRequest.FromString,
+                    response_serializer=node__pb2.BuscarCancionResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -264,6 +281,33 @@ class NodeService(object):
             '/node.NodeService/BuscarResponsabilidades',
             node__pb2.ResponsabilidadesRequest.SerializeToString,
             node__pb2.ResponsabilidadesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def BuscarCancion(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/node.NodeService/BuscarCancion',
+            node__pb2.BuscarCancionRequest.SerializeToString,
+            node__pb2.BuscarCancionResponse.FromString,
             options,
             channel_credentials,
             insecure,
