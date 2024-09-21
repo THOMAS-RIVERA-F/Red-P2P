@@ -38,6 +38,9 @@ class Node(node_pb2_grpc.NodeServiceServicer):
                 stub = node_pb2_grpc.NodeServiceStub(channel)
                 print(f"Reenviando canción '{request.cancion}' al sucesor con ID {self.successor.id}")
                 stub.SendMessage(node_pb2.CancionRequest(cancion=request.cancion, tamano_cancion=request.tamano_cancion))
+        
+        print(f"Responsabilidades del nodo actual: {self.dic_mis_canciones}")
+        
         return node_pb2.MessageResponse(reply=f"Cancion '{request.cancion}' recibida")
 
 
@@ -47,27 +50,23 @@ class Node(node_pb2_grpc.NodeServiceServicer):
         node_pb2_grpc.add_NodeServiceServicer_to_server(self, server)  # Registrar esta instancia del Nodo como servicio
         server.add_insecure_port(f'[::]:{self.port}')  # Usar el puerto ya definido en la instancia
         server.start()
-        print(f"Node server started on port {self.port}")
         server.wait_for_termination()
     
     def FindSuccessor(self, request, context):
         """Método que encuentra el sucesor adecuado para un nodo nuevo que quiere unirse."""
-        print(f"Buscando sucesor para el nodo con ID {request.id}")
+        print(f"Buscando sucesor para el nodo con ID {request.id} \n")
         
         
         # Caso 2: El ID del sucesor es menor que el ID del nodo actual y el ID del solicitante es mayor que el ID del nodo actual
         if self.id > self.successor.id and self.id < request.id:
-            print(f"El nodo actual ({self.id}) es el sucesor adecuado (rango cruzando el límite superior).")
             return node_pb2.SuccessorResponse(successor_address=self.successor.address, predecessor_address=self.address)
         elif self.id < request.id <= self.successor.id or self.successor.id == self.id:
-            print(f"El nodo actual ({self.id}) es el sucesor adecuado.")
             return node_pb2.SuccessorResponse(successor_address=self.successor.address, predecessor_address=self.address)
         else:
             with grpc.insecure_channel(self.successor.address) as channel:
-                print("redirijiendo")
+                print("redirijiendo \n")
                 stub = node_pb2_grpc.NodeServiceStub(channel)
                 response = stub.FindSuccessor(request)
-                #print(f"Enviando respuesta de sucesor: {response.successor}")
                 return response
     
     def BuscarResponsabilidades(self, request, context):
@@ -79,6 +78,8 @@ class Node(node_pb2_grpc.NodeServiceServicer):
         # Eliminar del diccionario original las claves que se han asignado a otro nodo
         for key in items_responsables.keys():
             del self.dic_mis_canciones[key]
+        
+        print(f"Responsabilidades del nodo actual: {self.dic_mis_canciones}")
         
         # Crear la respuesta con los items filtrados
         return node_pb2.ResponsabilidadesResponse(items=items_responsables)
@@ -120,9 +121,10 @@ class Node(node_pb2_grpc.NodeServiceServicer):
                 print(f"Reenviando canción '{cancion}' al sucesor con ID {self.successor.id}")
                 stub.SendMessage(node_pb2.CancionRequest(cancion=cancion, tamano_cancion=tamano_cancion))
     
-    def buscar_mis_responsabilidades(self, predecessor_address):
+    def buscar_mis_responsabilidades(self, predecessor_port):
         
-        with grpc.insecure_channel(f'localhost:{predecessor_address}') as channel:
+        with grpc.insecure_channel(f'localhost:{predecessor_port}') as channel:
+            print("Conectando con el predecesor...", predecessor_port)
             stub = node_pb2_grpc.NodeServiceStub(channel)
             # Crear el request con mi ID
             request = node_pb2.ResponsabilidadesRequest(id=self.id)
@@ -134,14 +136,28 @@ class Node(node_pb2_grpc.NodeServiceServicer):
 
     
     def search_cancion(self, cancion_buscar):
-        pass
+        '''
+        hash_cancion = self.do_hash(cancion_buscar)
+        print(f"Buscando la canción '{cancion_buscar}' con hash: {hash_cancion}")
+        
+        if hash_cancion in self.dic_mis_canciones.keys():
+            print(f"La canción '{cancion_buscar}' se encuentra en el nodo con ID: {self.id}")
+        else:
+            # Si no es responsable, reenviar la solicitud al sucesor
+            with grpc.insecure_channel(self.successor.address) as channel:
+                stub = node_pb2_grpc.NodeServiceStub(channel)
+                print(f"Reenviando la solicitud de búsqueda de la canción '{cancion_buscar}' al sucesor con ID {self.successor.id}")
+                response = stub.search_cancion(node_pb2.CancionRequest(cancion=cancion_buscar, tamano_cancion=0))
+                print(response.reply)
+        '''
             
             
     def client_loop(self):
         """Bucle del cliente para enviar mensajes o solicitar el ID de otro nodo (Cliente)"""
         while True:
-            option = input("Escoge una opcion (1: Subir una cancion a la red, 2: Buscar una cancion en la red): ")
             print('')
+            option = input("Escoge una opcion (1: Subir una cancion a la red, 2: Buscar una cancion en la red): ")
+            
             
             if option == "1":
                 cancion = input("Ingresa la cancion a subir: ")
@@ -167,6 +183,7 @@ class Node(node_pb2_grpc.NodeServiceServicer):
 
     def join_existing_network(self, bootstrap_node_address):
         """Método para unirse a una red existente usando un nodo bootstrap."""
+        print(f'Soy el nodo con ID: {self.id}')
         with grpc.insecure_channel(bootstrap_node_address) as channel:
             stub = node_pb2_grpc.NodeServiceStub(channel)
             print("Intentando encontrar el sucesor...")
@@ -185,10 +202,6 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             self.successor = successor
             self.predecessor = predecessor
             
-            #buscar responsabilidades que debe tener el nodo que eran de mi predecesor
-            dic_mis_responsabilidades = self.buscar_mis_responsabilidades(int(response.predecessor_address.split(":")[-1]))
-            self.dic_mis_canciones = dic_mis_responsabilidades | self.dic_mis_canciones
-            print(f"Responsabilidades del nodo actual: {self.dic_mis_canciones}")
             
             print(f"Me uní a la red.")
             print()
@@ -207,6 +220,11 @@ class Node(node_pb2_grpc.NodeServiceServicer):
 
             print(f"Mi ID: {self.id}, Sucesor: {self.successor.id}, Predecesor: {self.predecessor.id}")
             
+            #buscar responsabilidades que debe tener el nodo que eran de mi predecesor
+            dic_mis_responsabilidades = self.buscar_mis_responsabilidades(self.predecessor.port)
+            self.dic_mis_canciones = dic_mis_responsabilidades | self.dic_mis_canciones
+            print(f"Responsabilidades del nodo actual: {self.dic_mis_canciones}")
+            
  
     # ========== UTILIDADES ==========
     def do_hash(self, string):
@@ -224,8 +242,6 @@ class Node(node_pb2_grpc.NodeServiceServicer):
         server_thread = threading.Thread(target=self.serve, daemon=True)
         server_thread.start()
 
-        print('')
-        print("Solicitando información del nodo...")
         # Determinar si este es el primer nodo o si se unirá a una red existente
         is_first_node = input("¿Es este el primer nodo en la red? (s/n): ").lower()
 
