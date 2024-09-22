@@ -28,7 +28,7 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             print('')
             print(f"Guardando canción '{cancion}' en el nodo con ID {self.id}")
             self.dic_mis_canciones[cancion_hash] = request.cancion
-        elif (self.id < cancion_hash < self.successor.id) or (self.id > self.successor.id and cancion_hash > self.id):
+        elif (self.id < cancion_hash < self.successor.id) or (self.id > self.successor.id and cancion_hash > self.id) or (self.id > self.successor.id and cancion_hash < self.successor.id):
             print('')
             print(f"Guardando canción '{request.cancion}' en el nodo con ID {self.id}")
             self.dic_mis_canciones[cancion_hash] = request.cancion
@@ -72,9 +72,18 @@ class Node(node_pb2_grpc.NodeServiceServicer):
     def BuscarResponsabilidades(self, request, context):
         id_solicitante = request.id
         
+        items_responsables1 = {}
+        items_responsables2 = {}
+        
         # Filtrar items del diccionario que tengan clave mayor al id del solicitante
-        items_responsables = {k: v for k, v in self.dic_mis_canciones.items() if k > id_solicitante}
-    
+        items_responsables1 = {k: v for k, v in self.dic_mis_canciones.items() if k > id_solicitante}
+        
+        #filtrar items del diccionario que tengan clave menor a mi id (caso 0)
+        items_responsables2 = {k: v for k, v in self.dic_mis_canciones.items() if k < self.id}
+
+        # Unir los items filtrados
+        items_responsables = items_responsables1|items_responsables2
+        
         # Eliminar del diccionario original las claves que se han asignado a otro nodo
         for key in items_responsables.keys():
             del self.dic_mis_canciones[key]
@@ -109,7 +118,7 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             print('')
             print(f"Guardando canción '{cancion}' en el nodo con ID {self.id}")
             self.dic_mis_canciones[cancion_hash] = cancion
-        elif (self.id < cancion_hash < self.successor.id) or (self.id > self.successor.id and cancion_hash > self.id):
+        elif (self.id < cancion_hash < self.successor.id) or (self.id > self.successor.id and cancion_hash > self.id) or (self.id > self.successor.id and cancion_hash < self.successor.id):
             print('')
             print(f"Guardando canción '{cancion}' en el nodo con ID {self.id}")
             self.dic_mis_canciones[cancion_hash] = cancion
