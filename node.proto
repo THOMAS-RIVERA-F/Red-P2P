@@ -17,6 +17,9 @@ service NodeService {
 
     // RPC para buscar una canción en la red
     rpc BuscarCancion (BuscarCancionRequest) returns (BuscarCancionResponse);
+
+    // RPC para enviar diccionario
+    rpc UpdateDiccionario (DiccionarioRequest) returns (MessageResponse);
 }
 
 
@@ -34,6 +37,9 @@ message NodeIDRequest {
     int32 id = 1;  // Define el campo id como string (puedes mantenerlo como int32 si prefieres)
 }
 
+message DiccionarioRequest{
+    map<int32, string> diccionario = 1;
+}
 
 // Respuesta que contiene la información del sucesor y predecesor
 message SuccessorResponse {

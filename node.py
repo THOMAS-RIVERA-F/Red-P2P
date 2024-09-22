@@ -142,7 +142,41 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             response = stub.BuscarResponsabilidades(request)
             # Retornar los items recibidos como un diccionario
             return dict(response.items)
+    
+    def salir_de_la_red(self):
+        
+        self.enviar_diccionario()
+        
+        # Actualizar sucesor del nodo predecesor
+        with grpc.insecure_channel(self.predecessor.address) as channel_pred:
+            stub_pred = node_pb2_grpc.NodeServiceStub(channel_pred)
+            stub_pred.UpdateSuccessor(node_pb2.UpdateRequest(new_successor_address=self.successor.address, new_predecessor_address=""))
+        
+        # Actualizar predecesor del nodo sucesor
+        with grpc.insecure_channel(self.successor.address) as channel_succ:
+            stub_succ = node_pb2_grpc.NodeServiceStub(channel_succ)
+            stub_succ.UpdatePredecessor(node_pb2.UpdateRequest(new_predecessor_address=self.predecessor.address, new_successor_address=""))
+            
+        
+        
+        print(f"Me he retirado de la red.")
 
+    def enviar_diccionario(self):
+        # Enviar el diccionario al nodo destino
+        print('AAAAAAAAAAAAAAAAAAAAAA')
+        with grpc.insecure_channel(self.predecessor.address) as channel:
+            print(f'print{self.predecessor.address}')
+            stub = node_pb2_grpc.NodeServiceStub(channel)
+            response = stub.UpdateDiccionario(node_pb2.DiccionarioRequest(diccionario=self.dic_mis_canciones))
+            print(response.reply)
+    
+    def UpdateDiccionario(self, request, context):
+        print('BBBBBBBBBBBBBBBBBBBBBBB')
+        # Recibir el diccionario y actualizar el diccionario actual
+        self.dic_mis_canciones = self.dic_mis_canciones | dict(request.diccionario)
+        print("Diccionario actualizado.")
+        print(f"Responsabilidades del nodo actual: {self.dic_mis_canciones}")
+        return node_pb2.MessageResponse(reply="Diccionario recibido con éxito.")
     
     def buscar_cancion(self, cancion_buscada):
         requester_id = self.id
@@ -159,11 +193,10 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             with grpc.insecure_channel(self.successor.address) as channel:
                 
                 stub = node_pb2_grpc.NodeServiceStub(channel)
-                
-                request = node_pb2.BuscarCancionRequest(cancion = cancion_buscada, requester_id = requester_id)
+                #request = node_pb2.BuscarCancionRequest(cancion = cancion_buscada, requester_id = requester_id)
                 
                 print(f"Reenviando la solicitud de búsqueda de la canción '{cancion_buscada}' al sucesor con ID {self.successor.id}")
-                response = stub.BuscarCancion(request)
+                response = stub.BuscarCancion(node_pb2.BuscarCancionRequest(cancion=cancion_buscada, requester_id=requester_id))
                 
                 if response.id_nodo == -1:
                     print(f"La canción '{cancion_buscada}' no se encontró en toda la red.")
@@ -173,8 +206,8 @@ class Node(node_pb2_grpc.NodeServiceServicer):
                 
                     
     def BuscarCancion(self, request, context):
-        id_solicitante = request.requester_id
         hash_cancion = self.do_hash(request.cancion)
+        id_solicitante = request.requester_id
         
         if hash_cancion in self.dic_mis_canciones.keys():
             # Si la canción está en este nodo
@@ -187,7 +220,7 @@ class Node(node_pb2_grpc.NodeServiceServicer):
                 print(f"La canción '{request.cancion}' no es responsabilidad de: {self.id}, reenviando al sucesor.")
                 with grpc.insecure_channel(self.successor.address) as channel:
                     stub = node_pb2_grpc.NodeServiceStub(channel)
-                    return stub.search_cancion(request)
+                    return stub.BuscarCancion(request)
             else:
                 # Si ha dado toda la vuelta y no se encontró
                 print(f"La canción '{request.cancion}' no se encontró en toda la red.")
@@ -199,8 +232,12 @@ class Node(node_pb2_grpc.NodeServiceServicer):
     def client_loop(self):
         """Bucle del cliente para enviar mensajes o solicitar el ID de otro nodo (Cliente)"""
         while True:
-            print('')
-            option = input("Escoge una opcion (1: Subir una cancion a la red, 2: Buscar una cancion en la red): ")
+            print('------------------------------------')
+            print('| 1: Subir una cancion a la red    |')
+            print('| 2: Buscar una cancion en la red  |')
+            print('| 3: Salir de la red               |')
+            print('------------------------------------')
+            option = input('Ingrese el número de la opción deseada: ')
             
             
             if option == "1":
@@ -211,6 +248,9 @@ class Node(node_pb2_grpc.NodeServiceServicer):
             elif option == "2":
                 cancion_buscar = input("Ingresa la cancion a buscar: ")
                 self.buscar_cancion(cancion_buscar)
+            elif option == "3":
+                self.salir_de_la_red()
+                break
                 
                 
     
