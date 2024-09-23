@@ -70,6 +70,16 @@ class NodeServiceStub(object):
                 request_serializer=node__pb2.DiccionarioRequest.SerializeToString,
                 response_deserializer=node__pb2.MessageResponse.FromString,
                 _registered_method=True)
+        self.PedirDHT = channel.unary_unary(
+                '/node.NodeService/PedirDHT',
+                request_serializer=node__pb2.DhtRequest.SerializeToString,
+                response_deserializer=node__pb2.DhtResponse.FromString,
+                _registered_method=True)
+        self.ActualizarDhts = channel.unary_unary(
+                '/node.NodeService/ActualizarDhts',
+                request_serializer=node__pb2.NewDht.SerializeToString,
+                response_deserializer=node__pb2.MessageResponse.FromString,
+                _registered_method=True)
 
 
 class NodeServiceServicer(object):
@@ -123,6 +133,19 @@ class NodeServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def PedirDHT(self, request, context):
+        """RPC para pedir la DHT de nodos de la red
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ActualizarDhts(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_NodeServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -159,6 +182,16 @@ def add_NodeServiceServicer_to_server(servicer, server):
             'UpdateDiccionario': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateDiccionario,
                     request_deserializer=node__pb2.DiccionarioRequest.FromString,
+                    response_serializer=node__pb2.MessageResponse.SerializeToString,
+            ),
+            'PedirDHT': grpc.unary_unary_rpc_method_handler(
+                    servicer.PedirDHT,
+                    request_deserializer=node__pb2.DhtRequest.FromString,
+                    response_serializer=node__pb2.DhtResponse.SerializeToString,
+            ),
+            'ActualizarDhts': grpc.unary_unary_rpc_method_handler(
+                    servicer.ActualizarDhts,
+                    request_deserializer=node__pb2.NewDht.FromString,
                     response_serializer=node__pb2.MessageResponse.SerializeToString,
             ),
     }
@@ -351,6 +384,60 @@ class NodeService(object):
             target,
             '/node.NodeService/UpdateDiccionario',
             node__pb2.DiccionarioRequest.SerializeToString,
+            node__pb2.MessageResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def PedirDHT(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/node.NodeService/PedirDHT',
+            node__pb2.DhtRequest.SerializeToString,
+            node__pb2.DhtResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ActualizarDhts(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/node.NodeService/ActualizarDhts',
+            node__pb2.NewDht.SerializeToString,
             node__pb2.MessageResponse.FromString,
             options,
             channel_credentials,

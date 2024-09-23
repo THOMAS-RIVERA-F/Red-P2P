@@ -24,43 +24,57 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nnode.proto\x12\x04node\"9\n\x0e\x43\x61ncionRequest\x12\x0f\n\x07\x63\x61ncion\x18\x01 \x01(\t\x12\x16\n\x0etamano_cancion\x18\x02 \x01(\x05\" \n\x0fMessageResponse\x12\r\n\x05reply\x18\x01 \x01(\t\"\x1b\n\rNodeIDRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\x88\x01\n\x12\x44iccionarioRequest\x12>\n\x0b\x64iccionario\x18\x01 \x03(\x0b\x32).node.DiccionarioRequest.DiccionarioEntry\x1a\x32\n\x10\x44iccionarioEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"K\n\x11SuccessorResponse\x12\x19\n\x11successor_address\x18\x01 \x01(\t\x12\x1b\n\x13predecessor_address\x18\x02 \x01(\t\"O\n\rUpdateRequest\x12\x1f\n\x17new_predecessor_address\x18\x01 \x01(\t\x12\x1d\n\x15new_successor_address\x18\x02 \x01(\t\"\x0f\n\rEmptyResponse\"&\n\x18ResponsabilidadesRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\x84\x01\n\x19ResponsabilidadesResponse\x12\x39\n\x05items\x18\x01 \x03(\x0b\x32*.node.ResponsabilidadesResponse.ItemsEntry\x1a,\n\nItemsEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"=\n\x14\x42uscarCancionRequest\x12\x0f\n\x07\x63\x61ncion\x18\x01 \x01(\t\x12\x14\n\x0crequester_id\x18\x02 \x01(\x05\"9\n\x15\x42uscarCancionResponse\x12\x0f\n\x07\x63\x61ncion\x18\x01 \x01(\t\x12\x0f\n\x07id_nodo\x18\x03 \x01(\x05\x32\xf0\x03\n\x0bNodeService\x12:\n\x0bSendMessage\x12\x14.node.CancionRequest\x1a\x15.node.MessageResponse\x12=\n\rFindSuccessor\x12\x13.node.NodeIDRequest\x1a\x17.node.SuccessorResponse\x12=\n\x11UpdatePredecessor\x12\x13.node.UpdateRequest\x1a\x13.node.EmptyResponse\x12;\n\x0fUpdateSuccessor\x12\x13.node.UpdateRequest\x1a\x13.node.EmptyResponse\x12Z\n\x17\x42uscarResponsabilidades\x12\x1e.node.ResponsabilidadesRequest\x1a\x1f.node.ResponsabilidadesResponse\x12H\n\rBuscarCancion\x12\x1a.node.BuscarCancionRequest\x1a\x1b.node.BuscarCancionResponse\x12\x44\n\x11UpdateDiccionario\x12\x18.node.DiccionarioRequest\x1a\x15.node.MessageResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nnode.proto\x12\x04node\"\x84\x01\n\x06NewDht\x12@\n\x13\x64iccionario_new_dht\x18\x01 \x03(\x0b\x32#.node.NewDht.DiccionarioNewDhtEntry\x1a\x38\n\x16\x44iccionarioNewDhtEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\x18\n\nDhtRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\x84\x01\n\x0b\x44htResponse\x12>\n\x0f\x64iccionario_dht\x18\x01 \x03(\x0b\x32%.node.DhtResponse.DiccionarioDhtEntry\x1a\x35\n\x13\x44iccionarioDhtEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"9\n\x0e\x43\x61ncionRequest\x12\x0f\n\x07\x63\x61ncion\x18\x01 \x01(\t\x12\x16\n\x0etamano_cancion\x18\x02 \x01(\x05\" \n\x0fMessageResponse\x12\r\n\x05reply\x18\x01 \x01(\t\"\x1b\n\rNodeIDRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\x88\x01\n\x12\x44iccionarioRequest\x12>\n\x0b\x64iccionario\x18\x01 \x03(\x0b\x32).node.DiccionarioRequest.DiccionarioEntry\x1a\x32\n\x10\x44iccionarioEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"K\n\x11SuccessorResponse\x12\x19\n\x11successor_address\x18\x01 \x01(\t\x12\x1b\n\x13predecessor_address\x18\x02 \x01(\t\"O\n\rUpdateRequest\x12\x1f\n\x17new_predecessor_address\x18\x01 \x01(\t\x12\x1d\n\x15new_successor_address\x18\x02 \x01(\t\"\x0f\n\rEmptyResponse\"&\n\x18ResponsabilidadesRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\x84\x01\n\x19ResponsabilidadesResponse\x12\x39\n\x05items\x18\x01 \x03(\x0b\x32*.node.ResponsabilidadesResponse.ItemsEntry\x1a,\n\nItemsEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"=\n\x14\x42uscarCancionRequest\x12\x0f\n\x07\x63\x61ncion\x18\x01 \x01(\t\x12\x14\n\x0crequester_id\x18\x02 \x01(\x05\"9\n\x15\x42uscarCancionResponse\x12\x0f\n\x07\x63\x61ncion\x18\x01 \x01(\t\x12\x0f\n\x07id_nodo\x18\x03 \x01(\x05\x32\xd8\x04\n\x0bNodeService\x12:\n\x0bSendMessage\x12\x14.node.CancionRequest\x1a\x15.node.MessageResponse\x12=\n\rFindSuccessor\x12\x13.node.NodeIDRequest\x1a\x17.node.SuccessorResponse\x12=\n\x11UpdatePredecessor\x12\x13.node.UpdateRequest\x1a\x13.node.EmptyResponse\x12;\n\x0fUpdateSuccessor\x12\x13.node.UpdateRequest\x1a\x13.node.EmptyResponse\x12Z\n\x17\x42uscarResponsabilidades\x12\x1e.node.ResponsabilidadesRequest\x1a\x1f.node.ResponsabilidadesResponse\x12H\n\rBuscarCancion\x12\x1a.node.BuscarCancionRequest\x1a\x1b.node.BuscarCancionResponse\x12\x44\n\x11UpdateDiccionario\x12\x18.node.DiccionarioRequest\x1a\x15.node.MessageResponse\x12/\n\x08PedirDHT\x12\x10.node.DhtRequest\x1a\x11.node.DhtResponse\x12\x35\n\x0e\x41\x63tualizarDhts\x12\x0c.node.NewDht\x1a\x15.node.MessageResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'node_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
+  _globals['_NEWDHT_DICCIONARIONEWDHTENTRY']._loaded_options = None
+  _globals['_NEWDHT_DICCIONARIONEWDHTENTRY']._serialized_options = b'8\001'
+  _globals['_DHTRESPONSE_DICCIONARIODHTENTRY']._loaded_options = None
+  _globals['_DHTRESPONSE_DICCIONARIODHTENTRY']._serialized_options = b'8\001'
   _globals['_DICCIONARIOREQUEST_DICCIONARIOENTRY']._loaded_options = None
   _globals['_DICCIONARIOREQUEST_DICCIONARIOENTRY']._serialized_options = b'8\001'
   _globals['_RESPONSABILIDADESRESPONSE_ITEMSENTRY']._loaded_options = None
   _globals['_RESPONSABILIDADESRESPONSE_ITEMSENTRY']._serialized_options = b'8\001'
-  _globals['_CANCIONREQUEST']._serialized_start=20
-  _globals['_CANCIONREQUEST']._serialized_end=77
-  _globals['_MESSAGERESPONSE']._serialized_start=79
-  _globals['_MESSAGERESPONSE']._serialized_end=111
-  _globals['_NODEIDREQUEST']._serialized_start=113
-  _globals['_NODEIDREQUEST']._serialized_end=140
-  _globals['_DICCIONARIOREQUEST']._serialized_start=143
-  _globals['_DICCIONARIOREQUEST']._serialized_end=279
-  _globals['_DICCIONARIOREQUEST_DICCIONARIOENTRY']._serialized_start=229
-  _globals['_DICCIONARIOREQUEST_DICCIONARIOENTRY']._serialized_end=279
-  _globals['_SUCCESSORRESPONSE']._serialized_start=281
-  _globals['_SUCCESSORRESPONSE']._serialized_end=356
-  _globals['_UPDATEREQUEST']._serialized_start=358
-  _globals['_UPDATEREQUEST']._serialized_end=437
-  _globals['_EMPTYRESPONSE']._serialized_start=439
-  _globals['_EMPTYRESPONSE']._serialized_end=454
-  _globals['_RESPONSABILIDADESREQUEST']._serialized_start=456
-  _globals['_RESPONSABILIDADESREQUEST']._serialized_end=494
-  _globals['_RESPONSABILIDADESRESPONSE']._serialized_start=497
-  _globals['_RESPONSABILIDADESRESPONSE']._serialized_end=629
-  _globals['_RESPONSABILIDADESRESPONSE_ITEMSENTRY']._serialized_start=585
-  _globals['_RESPONSABILIDADESRESPONSE_ITEMSENTRY']._serialized_end=629
-  _globals['_BUSCARCANCIONREQUEST']._serialized_start=631
-  _globals['_BUSCARCANCIONREQUEST']._serialized_end=692
-  _globals['_BUSCARCANCIONRESPONSE']._serialized_start=694
-  _globals['_BUSCARCANCIONRESPONSE']._serialized_end=751
-  _globals['_NODESERVICE']._serialized_start=754
-  _globals['_NODESERVICE']._serialized_end=1250
+  _globals['_NEWDHT']._serialized_start=21
+  _globals['_NEWDHT']._serialized_end=153
+  _globals['_NEWDHT_DICCIONARIONEWDHTENTRY']._serialized_start=97
+  _globals['_NEWDHT_DICCIONARIONEWDHTENTRY']._serialized_end=153
+  _globals['_DHTREQUEST']._serialized_start=155
+  _globals['_DHTREQUEST']._serialized_end=179
+  _globals['_DHTRESPONSE']._serialized_start=182
+  _globals['_DHTRESPONSE']._serialized_end=314
+  _globals['_DHTRESPONSE_DICCIONARIODHTENTRY']._serialized_start=261
+  _globals['_DHTRESPONSE_DICCIONARIODHTENTRY']._serialized_end=314
+  _globals['_CANCIONREQUEST']._serialized_start=316
+  _globals['_CANCIONREQUEST']._serialized_end=373
+  _globals['_MESSAGERESPONSE']._serialized_start=375
+  _globals['_MESSAGERESPONSE']._serialized_end=407
+  _globals['_NODEIDREQUEST']._serialized_start=409
+  _globals['_NODEIDREQUEST']._serialized_end=436
+  _globals['_DICCIONARIOREQUEST']._serialized_start=439
+  _globals['_DICCIONARIOREQUEST']._serialized_end=575
+  _globals['_DICCIONARIOREQUEST_DICCIONARIOENTRY']._serialized_start=525
+  _globals['_DICCIONARIOREQUEST_DICCIONARIOENTRY']._serialized_end=575
+  _globals['_SUCCESSORRESPONSE']._serialized_start=577
+  _globals['_SUCCESSORRESPONSE']._serialized_end=652
+  _globals['_UPDATEREQUEST']._serialized_start=654
+  _globals['_UPDATEREQUEST']._serialized_end=733
+  _globals['_EMPTYRESPONSE']._serialized_start=735
+  _globals['_EMPTYRESPONSE']._serialized_end=750
+  _globals['_RESPONSABILIDADESREQUEST']._serialized_start=752
+  _globals['_RESPONSABILIDADESREQUEST']._serialized_end=790
+  _globals['_RESPONSABILIDADESRESPONSE']._serialized_start=793
+  _globals['_RESPONSABILIDADESRESPONSE']._serialized_end=925
+  _globals['_RESPONSABILIDADESRESPONSE_ITEMSENTRY']._serialized_start=881
+  _globals['_RESPONSABILIDADESRESPONSE_ITEMSENTRY']._serialized_end=925
+  _globals['_BUSCARCANCIONREQUEST']._serialized_start=927
+  _globals['_BUSCARCANCIONREQUEST']._serialized_end=988
+  _globals['_BUSCARCANCIONRESPONSE']._serialized_start=990
+  _globals['_BUSCARCANCIONRESPONSE']._serialized_end=1047
+  _globals['_NODESERVICE']._serialized_start=1050
+  _globals['_NODESERVICE']._serialized_end=1650
 # @@protoc_insertion_point(module_scope)

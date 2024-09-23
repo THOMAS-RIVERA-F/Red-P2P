@@ -20,8 +20,25 @@ service NodeService {
 
     // RPC para enviar diccionario
     rpc UpdateDiccionario (DiccionarioRequest) returns (MessageResponse);
+
+    // RPC para pedir la DHT de nodos de la red
+    rpc PedirDHT (DhtRequest) returns (DhtResponse);
+
+    rpc ActualizarDhts (NewDht) returns (MessageResponse);
+
 }
 
+message NewDht{
+    map<int32, string> diccionario_new_dht = 1;
+}
+
+message DhtRequest {
+    int32 id = 1;
+}
+
+message DhtResponse {
+    map<int32, string> diccionario_dht = 1;
+}
 
 message CancionRequest {
     string cancion = 1;          // Nombre de la canción
